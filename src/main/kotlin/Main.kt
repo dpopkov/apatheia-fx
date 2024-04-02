@@ -1,5 +1,8 @@
 package io.dpopkov.apatheiafx
 
+import io.dpopkov.apatheiafx.ui.App
+import javafx.application.Application
+
 fun main() {
-    println("Hello!")
+    Application.launch(App::class.java)
 }
