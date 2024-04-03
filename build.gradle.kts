@@ -22,5 +22,5 @@ kotlin {
 }
 javafx {
     version = "19"
-    modules("javafx.controls", "javafx.graphics", "javafx.fxml")
+    modules("javafx.controls", "javafx.graphics", "javafx.fxml", "javafx.media")
 }

@@ -14,7 +14,11 @@ import java.util.*
 
 private const val DEFAULT_SECONDS_INTERVAL = 25 * 60
 
-class FocusTimer {
+class FocusTimer(
+    private val playSoundNotification: Boolean = true,
+    private val showAlert: Boolean = true,
+) {
+    private val player = Player()
     private var focusTimer: Timer? = null
     private var secondsTimer: Timer? = null
     private val secondsProperty = SimpleIntegerProperty(DEFAULT_SECONDS_INTERVAL)
@@ -116,10 +120,15 @@ class FocusTimer {
         override fun run() {
             Platform.runLater {
                 secondsTimer?.cancel()
-                Alert(Alert.AlertType.INFORMATION).apply {
-                    title = "Focus Interval"
-                    headerText = "Interval is over!"
-                    showAndWait()
+                if (playSoundNotification) {
+                    player.play()
+                }
+                if (showAlert) {
+                    Alert(Alert.AlertType.INFORMATION).apply {
+                        title = "Focus Interval"
+                        headerText = "Interval is over!"
+                        showAndWait()
+                    }
                 }
             }
         }
