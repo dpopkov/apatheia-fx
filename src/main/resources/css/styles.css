@@ -1,0 +1,7 @@
+.pomodoro-pane {
+    -fx-padding: 3em;
+}
+.timer-output-text {
+    -fx-font-size: 4em;
+    -fx-font-weight: bold;
+}
