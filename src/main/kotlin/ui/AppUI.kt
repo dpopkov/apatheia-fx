@@ -6,7 +6,7 @@ import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
 
-class App : Application() {
+class AppUI : Application() {
     private val focusTimer = FocusTimer()
 
     override fun start(primaryStage: Stage) {

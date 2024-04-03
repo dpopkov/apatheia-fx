@@ -18,7 +18,7 @@ class FocusTimer(
     private val playSoundNotification: Boolean = true,
     private val showAlert: Boolean = true,
 ) {
-    private val player = Player()
+    private val audioPlayer = AudioPlayer()
     private var focusTimer: Timer? = null
     private var secondsTimer: Timer? = null
     private val secondsProperty = SimpleIntegerProperty(DEFAULT_SECONDS_INTERVAL)
@@ -121,7 +121,7 @@ class FocusTimer(
             Platform.runLater {
                 secondsTimer?.cancel()
                 if (playSoundNotification) {
-                    player.play()
+                    audioPlayer.play()
                 }
                 if (showAlert) {
                     Alert(Alert.AlertType.INFORMATION).apply {

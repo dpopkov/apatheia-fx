@@ -4,7 +4,7 @@ import javafx.scene.media.AudioClip
 
 private const val DEFAULT_WAV = "pomodoro-f1.wav"
 
-class Player(
+class AudioPlayer(
     wavResource: String = "sound/$DEFAULT_WAV"
 ) {
     private val clip: AudioClip
