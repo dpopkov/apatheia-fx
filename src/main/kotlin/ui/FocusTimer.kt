@@ -12,16 +12,24 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import java.util.*
 
-private const val DEFAULT_SECONDS_INTERVAL = 25 * 60
+private const val DEFAULT_FOCUS_SECONDS_INTERVAL = 25 * 60
+private const val DEFAULT_SHORT_REST_SECONDS_INTERVAL = 5 * 60
+
+private enum class IntervalType {
+    FOCUS,
+    SHORT_REST,
+}
 
 class FocusTimer(
     private val playSoundNotification: Boolean = true,
     private val showAlert: Boolean = true,
 ) {
+    private val timerUiContent = VBox(10.0)
+    private var intervalType = IntervalType.FOCUS
     private val audioPlayer = AudioPlayer()
     private var focusTimer: Timer? = null
     private var secondsTimer: Timer? = null
-    private val secondsProperty = SimpleIntegerProperty(DEFAULT_SECONDS_INTERVAL)
+    private val secondsProperty = SimpleIntegerProperty(DEFAULT_FOCUS_SECONDS_INTERVAL)
     private val secondsBinding = Bindings.createStringBinding(
         { secondsProperty.value.formatSecondsToTime() },
         secondsProperty
@@ -36,6 +44,12 @@ class FocusTimer(
     }
 
     fun buildPomodoroNode(): Node {
+        val btnFocus = Button("Focus").apply {
+            setOnAction { setFocusedState() }
+        }
+        val btnRest = Button("Short Rest").apply {
+            setOnAction { setRestState() }
+        }
         val timerTxt = Text().apply {
             textProperty().bind(secondsBinding)
             styleClass.addAll("timer-output-text")
@@ -63,23 +77,51 @@ class FocusTimer(
             updateSecondsProperty()
         }
 
-        return VBox(
-            10.0,
-            inputTestingTimeField,
-            timerTxt,
-            HBox(
-                5.0,
-                btnStart,
-                btnStop,
-                btnReset,
-            ),
-        ).apply {
-            styleClass.addAll("pomodoro-pane")
+        with(timerUiContent.children) {
+            addAll(
+                HBox(5.0, btnFocus, btnRest),
+                inputTestingTimeField,
+                timerTxt,
+                HBox(
+                    5.0,
+                    btnStart,
+                    btnStop,
+                    btnReset,
+                ),
+            )
         }
+        timerUiContent.styleClass.addAll("pomodoro-pane")
+        setFocusedState()
+        return timerUiContent
     }
 
     fun cancel() {
         cancelTimers()
+    }
+
+    private fun setFocusedState() {
+        with(timerUiContent.styleClass) {
+            remove("pomodoro-rest")
+            if (!contains("pomodoro-focus")) add("pomodoro-focus")
+        }
+        secondsProperty.value = DEFAULT_FOCUS_SECONDS_INTERVAL
+        intervalType = IntervalType.FOCUS
+    }
+
+    private fun setRestState() {
+        with(timerUiContent.styleClass) {
+            remove("pomodoro-focus")
+            if (!contains("pomodoro-rest")) add("pomodoro-rest")
+        }
+        secondsProperty.value = DEFAULT_SHORT_REST_SECONDS_INTERVAL
+        intervalType = IntervalType.SHORT_REST
+    }
+
+    private fun switchIntervalState() {
+        when (intervalType) {
+            IntervalType.FOCUS -> setRestState()
+            IntervalType.SHORT_REST -> setFocusedState()
+        }
     }
 
     private fun cancelTimers() {
@@ -89,7 +131,10 @@ class FocusTimer(
 
     private fun updateSecondsProperty() {
         if (inputTestingTimeField.text.isEmpty() || inputTestingTimeField.text.isBlank()) {
-            secondsProperty.value = DEFAULT_SECONDS_INTERVAL
+            secondsProperty.value = when (intervalType) {
+                IntervalType.FOCUS -> DEFAULT_FOCUS_SECONDS_INTERVAL
+                IntervalType.SHORT_REST -> DEFAULT_SHORT_REST_SECONDS_INTERVAL
+            }
         } else {
             secondsProperty.value = inputTestingTimeField.text.parseTimeToSeconds()
         }
@@ -130,6 +175,7 @@ class FocusTimer(
                         showAndWait()
                     }
                 }
+                switchIntervalState()
             }
         }
     }

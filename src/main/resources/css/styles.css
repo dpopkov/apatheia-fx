@@ -1,6 +1,12 @@
 .pomodoro-pane {
     -fx-padding: 3em;
 }
+.pomodoro-focus {
+    -fx-background-color: papayawhip;
+}
+.pomodoro-rest {
+    -fx-background-color: palegreen;
+}
 .timer-output-text {
     -fx-font-size: 4em;
     -fx-font-weight: bold;
