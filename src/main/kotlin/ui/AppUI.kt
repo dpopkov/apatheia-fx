@@ -19,7 +19,7 @@ class AppUI : Application() {
             focusTimer.buildPomodoroNode(),
         )
         with(primaryStage) {
-            scene = Scene(root, 480.0, 240.0).apply {
+            scene = Scene(root, 480.0, 480.0).apply {
                 stylesheets.add("css/styles.css")
             }
             show()

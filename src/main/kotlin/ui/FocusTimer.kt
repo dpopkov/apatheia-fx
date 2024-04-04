@@ -1,5 +1,7 @@
 package io.dpopkov.apatheiafx.ui
 
+import io.dpopkov.apatheiafx.model.Pomidor
+import io.dpopkov.apatheiafx.model.FinishedPomidorsList
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleIntegerProperty
@@ -34,6 +36,11 @@ class FocusTimer(
             }
         }
     }
+    private val finishedPomidors = FinishedPomidorsList()
+    private var currentPomidor: Pomidor? = null
+    private val finishedCountText = Text("").apply {
+        textProperty().bind(finishedPomidors.count.asString())
+    }
 
     fun buildPomodoroNode(): Node {
         val btnFocus = Button("Focus").apply {
@@ -53,6 +60,7 @@ class FocusTimer(
         btnStart.setOnAction {
             println("Clicked Start")
             println("Scheduling timer for ${secondsProperty.value} seconds")
+            currentPomidor = Pomidor()
             focusTimer = Timer(true).apply {
                 schedule(IntervalTask(), (secondsProperty.value * 1000).toLong())
             }
@@ -83,6 +91,9 @@ class FocusTimer(
                     btnStop,
                     btnReset,
                 ),
+                verticalStrut(10),
+                HBox(Text("Finished intervals: "), finishedCountText),
+                HistoryTable(finishedPomidors.items).buildTable(),
             )
         }
         timerUiContent.styleClass.addAll("pomodoro-pane")
@@ -168,6 +179,11 @@ class FocusTimer(
                         showAndWait()
                     }
                 }
+                currentPomidor?.let {
+                    it.finishIt()
+                    finishedPomidors.add(it)
+                }
+                currentPomidor = null
                 switchIntervalState()
             }
         }
