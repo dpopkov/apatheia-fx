@@ -61,8 +61,6 @@ class FocusTimer(
         }
         val btnStart = Button("Start")
         btnStart.setOnAction {
-            println("Clicked Start")
-            println("Scheduling timer for ${secondsProperty.value} seconds")
             val intervalName = intervalNameField.text.trim()
             currentPomidor = if (intervalName.isNotEmpty()) {
                 Pomidor(name = intervalName)
@@ -79,12 +77,10 @@ class FocusTimer(
         }
         val btnStop = Button("Stop")
         btnStop.setOnAction {
-            println("Clicked Stop")
             cancelTimers()
         }
         val btnReset = Button("Reset")
         btnReset.setOnAction {
-            println("Clicked Reset")
             cancelTimers()
             updateSecondsProperty()
         }
