@@ -42,6 +42,9 @@ class FocusTimer(
         val btnRest = Button("Short Rest").apply {
             setOnAction { setRestState() }
         }
+        val btnLongRest = Button("Long Rest").apply {
+            setOnAction { setLongRestState() }
+        }
         val timerTxt = Text().apply {
             textProperty().bind(secondsBinding)
             styleClass.addAll("timer-output-text")
@@ -71,7 +74,7 @@ class FocusTimer(
 
         with(timerUiContent.children) {
             addAll(
-                HBox(5.0, btnFocus, btnRest),
+                HBox(5.0, btnFocus, btnRest, btnLongRest),
                 inputTestingTimeField,
                 timerTxt,
                 HBox(
@@ -99,6 +102,10 @@ class FocusTimer(
         setIntervalState(IntervalType.SHORT_REST)
     }
 
+    private fun setLongRestState() {
+        setIntervalState(IntervalType.LONG_REST)
+    }
+
     private fun setIntervalState(type: IntervalType) {
         type.setStyleOn(timerUiContent.styleClass)
         secondsProperty.value = type.defaultSeconds
@@ -109,6 +116,7 @@ class FocusTimer(
         when (intervalType) {
             IntervalType.FOCUS -> setRestState()
             IntervalType.SHORT_REST -> setFocusedState()
+            IntervalType.LONG_REST -> setFocusedState()
         }
     }
 

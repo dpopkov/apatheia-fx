@@ -7,7 +7,8 @@ enum class IntervalType(
     private val styleName: String,
 ) {
     FOCUS(25 * 60, "pomodoro-focus"),
-    SHORT_REST(5 * 60, "pomodoro-rest");
+    SHORT_REST(5 * 60, "pomodoro-rest"),
+    LONG_REST(15 * 60, "pomodoro-long-rest");
 
     fun setStyleOn(styleClasses: ObservableList<String>) {
         entries.map { it.styleName }.filter { it != styleName }.forEach {

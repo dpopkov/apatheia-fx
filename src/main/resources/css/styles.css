@@ -7,6 +7,9 @@
 .pomodoro-rest {
     -fx-background-color: palegreen;
 }
+.pomodoro-long-rest {
+    -fx-background-color: limegreen;
+}
 .timer-output-text {
     -fx-font-size: 4em;
     -fx-font-weight: bold;
