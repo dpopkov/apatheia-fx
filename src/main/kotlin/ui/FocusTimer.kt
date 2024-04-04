@@ -12,14 +12,6 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import java.util.*
 
-private const val DEFAULT_FOCUS_SECONDS_INTERVAL = 25 * 60
-private const val DEFAULT_SHORT_REST_SECONDS_INTERVAL = 5 * 60
-
-private enum class IntervalType {
-    FOCUS,
-    SHORT_REST,
-}
-
 class FocusTimer(
     private val playSoundNotification: Boolean = true,
     private val showAlert: Boolean = true,
@@ -29,7 +21,7 @@ class FocusTimer(
     private val audioPlayer = AudioPlayer()
     private var focusTimer: Timer? = null
     private var secondsTimer: Timer? = null
-    private val secondsProperty = SimpleIntegerProperty(DEFAULT_FOCUS_SECONDS_INTERVAL)
+    private val secondsProperty = SimpleIntegerProperty(IntervalType.FOCUS.defaultSeconds)
     private val secondsBinding = Bindings.createStringBinding(
         { secondsProperty.value.formatSecondsToTime() },
         secondsProperty
@@ -100,21 +92,17 @@ class FocusTimer(
     }
 
     private fun setFocusedState() {
-        with(timerUiContent.styleClass) {
-            remove("pomodoro-rest")
-            if (!contains("pomodoro-focus")) add("pomodoro-focus")
-        }
-        secondsProperty.value = DEFAULT_FOCUS_SECONDS_INTERVAL
-        intervalType = IntervalType.FOCUS
+        setIntervalState(IntervalType.FOCUS)
     }
 
     private fun setRestState() {
-        with(timerUiContent.styleClass) {
-            remove("pomodoro-focus")
-            if (!contains("pomodoro-rest")) add("pomodoro-rest")
-        }
-        secondsProperty.value = DEFAULT_SHORT_REST_SECONDS_INTERVAL
-        intervalType = IntervalType.SHORT_REST
+        setIntervalState(IntervalType.SHORT_REST)
+    }
+
+    private fun setIntervalState(type: IntervalType) {
+        type.setStyleOn(timerUiContent.styleClass)
+        secondsProperty.value = type.defaultSeconds
+        intervalType = type
     }
 
     private fun switchIntervalState() {
@@ -131,10 +119,7 @@ class FocusTimer(
 
     private fun updateSecondsProperty() {
         if (inputTestingTimeField.text.isEmpty() || inputTestingTimeField.text.isBlank()) {
-            secondsProperty.value = when (intervalType) {
-                IntervalType.FOCUS -> DEFAULT_FOCUS_SECONDS_INTERVAL
-                IntervalType.SHORT_REST -> DEFAULT_SHORT_REST_SECONDS_INTERVAL
-            }
+            secondsProperty.value = intervalType.defaultSeconds
         } else {
             secondsProperty.value = inputTestingTimeField.text.parseTimeToSeconds()
         }
