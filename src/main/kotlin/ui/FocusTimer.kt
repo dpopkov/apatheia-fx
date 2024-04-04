@@ -56,11 +56,20 @@ class FocusTimer(
             textProperty().bind(secondsBinding)
             styleClass.addAll("timer-output-text")
         }
+        val intervalNameField = TextField("").apply {
+            promptText = "Enter name for this interval"
+        }
         val btnStart = Button("Start")
         btnStart.setOnAction {
             println("Clicked Start")
             println("Scheduling timer for ${secondsProperty.value} seconds")
-            currentPomidor = Pomidor()
+            val intervalName = intervalNameField.text.trim()
+            currentPomidor = if (intervalName.isNotEmpty()) {
+                Pomidor(name = intervalName)
+            } else {
+                Pomidor() // use generated name
+            }
+            intervalNameField.clear()
             focusTimer = Timer(true).apply {
                 schedule(IntervalTask(), (secondsProperty.value * 1000).toLong())
             }
@@ -85,6 +94,7 @@ class FocusTimer(
                 HBox(5.0, btnFocus, btnRest, btnLongRest),
                 inputTestingTimeField,
                 timerTxt,
+                intervalNameField,
                 HBox(
                     5.0,
                     btnStart,
