@@ -1,6 +1,7 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.AppMainSpring
+import io.dpopkov.apatheiafx.backend.PomidorService
 import javafx.application.Application
 import javafx.event.EventHandler
 import javafx.scene.Scene
@@ -12,14 +13,17 @@ import org.springframework.context.ConfigurableApplicationContext
 
 class AppUI : Application() {
     private lateinit var applicationContext: ConfigurableApplicationContext
-    private val focusTimer = FocusTimer()
+    private lateinit var focusTimer: FocusTimer
+    private lateinit var pomidorService: PomidorService
 
     override fun init() {
         applicationContext = SpringApplicationBuilder(AppMainSpring::class.java)
             .bannerMode(Banner.Mode.OFF)
-            .logStartupInfo(true)
+            .logStartupInfo(false)
             .build()
             .run()
+        pomidorService = applicationContext.getBean(PomidorService::class.java)
+        focusTimer = FocusTimer(pomidorService)
     }
 
     override fun start(primaryStage: Stage) {

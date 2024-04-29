@@ -9,6 +9,7 @@ data class Pomidor(
     val start: LocalDateTime = LocalDateTime.now(),
     var finish: LocalDateTime? = null,
     var durationMinutes: Long = -1,
+    var id: Long? = null,
 ) {
     val isFinished: Boolean
         get() = finish != null && durationMinutes != -1L

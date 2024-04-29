@@ -3,12 +3,12 @@ package io.dpopkov.apatheiafx.model
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import java.time.LocalDateTime
 
 class FinishedPomidorsList {
     val items: ObservableList<Pomidor> = FXCollections.observableArrayList()
     val count = SimpleIntegerProperty(0)
 
+    /*
     init {
         add(
             Pomidor(
@@ -29,6 +29,7 @@ class FinishedPomidorsList {
             ).apply { finishIt(LocalDateTime.now().plusMinutes(19)) }
         )
     }
+    */
 
     fun add(item: Pomidor) {
         if (!item.isFinished) {
@@ -36,5 +37,11 @@ class FinishedPomidorsList {
         }
         items.add(item)
         count.value = count.value.inc()
+    }
+
+    fun addAll(items: Iterable<Pomidor>) {
+        items.forEach {
+            add(it)
+        }
     }
 }
