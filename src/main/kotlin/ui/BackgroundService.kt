@@ -13,7 +13,7 @@ class BackgroundService(
     private val pool = Executors.newCachedThreadPool()
 
     fun shutdown() {
-        pool::shutdown
+        pool.shutdown()
     }
 
     inner class SaveTask(private val item: Pomidor, updateUiAction: (Pomidor) -> Unit) : Task<Pomidor>() {
