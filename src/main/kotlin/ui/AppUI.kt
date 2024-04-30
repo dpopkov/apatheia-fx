@@ -7,14 +7,16 @@ import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
+import javafx.stage.WindowEvent
 import org.springframework.boot.Banner
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ConfigurableApplicationContext
 
 class AppUI : Application() {
+    private val closeListeners = mutableListOf<() -> Unit>()
     private lateinit var applicationContext: ConfigurableApplicationContext
     private lateinit var focusTimer: FocusTimer
-    private lateinit var pomidorService: PomidorService
+    private lateinit var backgroundService: BackgroundService
 
     override fun init() {
         applicationContext = SpringApplicationBuilder(AppMainSpring::class.java)
@@ -22,12 +24,17 @@ class AppUI : Application() {
             .logStartupInfo(false)
             .build()
             .run()
-        pomidorService = applicationContext.getBean(PomidorService::class.java)
-        focusTimer = FocusTimer(pomidorService)
+        val pomidorService = applicationContext.getBean(PomidorService::class.java)
+        backgroundService = BackgroundService(pomidorService)
+        closeListeners.add {
+            backgroundService.shutdown()
+        }
+        focusTimer = FocusTimer(backgroundService)
     }
 
     override fun start(primaryStage: Stage) {
         primaryStage.title = "ApatheiaFX"
+        primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST) { closeListeners.forEach { it() }}
         primaryStage.onCloseRequest = EventHandler {
             focusTimer.cancel()
         }

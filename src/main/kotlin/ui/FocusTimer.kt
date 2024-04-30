@@ -1,8 +1,7 @@
 package io.dpopkov.apatheiafx.ui
 
-import io.dpopkov.apatheiafx.backend.PomidorService
-import io.dpopkov.apatheiafx.model.Pomidor
 import io.dpopkov.apatheiafx.model.FinishedPomidorsList
+import io.dpopkov.apatheiafx.model.Pomidor
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleIntegerProperty
@@ -16,11 +15,10 @@ import javafx.scene.text.Text
 import java.util.*
 
 class FocusTimer(
-    pomidorService: PomidorService,
+    private val backgroundService: BackgroundService,
     private val playSoundNotification: Boolean = true,
     private val showAlert: Boolean = true,
 ) {
-    private val backgroundService = BackgroundService(pomidorService)
     private val timerUiContent = VBox(10.0)
     private var intervalType = IntervalType.FOCUS
     private val audioPlayer = AudioPlayer()
