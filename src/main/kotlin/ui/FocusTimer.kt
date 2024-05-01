@@ -1,10 +1,10 @@
 package io.dpopkov.apatheiafx.ui
 
-import io.dpopkov.apatheiafx.model.FinishedPomidorsList
 import io.dpopkov.apatheiafx.model.Pomidor
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.collections.FXCollections
 import javafx.scene.Node
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
@@ -37,10 +37,14 @@ class FocusTimer(
             }
         }
     }
-    private val finishedPomidors = FinishedPomidorsList()
+    private val finishedPomidors = FXCollections.observableArrayList<Pomidor>()
     private var currentPomidor: Pomidor? = null
+    private val sizeBinding = Bindings.createStringBinding(
+        { finishedPomidors.size.toString() },
+        finishedPomidors
+    )
     private val finishedCountText = Text("").apply {
-        textProperty().bind(finishedPomidors.count.asString())
+        textProperty().bind(sizeBinding)
     }
 
     init {
@@ -106,7 +110,7 @@ class FocusTimer(
                 ),
                 verticalStrut(10),
                 HBox(Text("Finished intervals: "), finishedCountText),
-                HistoryTable(finishedPomidors.items, backgroundService).buildTable(),
+                HistoryTable(finishedPomidors, backgroundService).buildTable(),
             )
         }
         timerUiContent.styleClass.addAll("pomodoro-pane")
