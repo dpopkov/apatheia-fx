@@ -14,3 +14,6 @@
     -fx-font-size: 4em;
     -fx-font-weight: bold;
 }
+.status-bar {
+    -fx-padding: 0.4em;
+}
