@@ -188,10 +188,12 @@ class FocusTimer(
                         showAndWait()
                     }
                 }
-                currentPomidor?.let {
-                    it.finishIt()
-                    backgroundService.save(it) {saved: Pomidor ->
-                        Platform.runLater { finishedPomidors.add(saved) }
+                if (intervalType == IntervalType.FOCUS) {
+                    currentPomidor?.let {
+                        it.finishIt()
+                        backgroundService.save(it) { saved: Pomidor ->
+                            Platform.runLater { finishedPomidors.add(saved) }
+                        }
                     }
                 }
                 currentPomidor = null
