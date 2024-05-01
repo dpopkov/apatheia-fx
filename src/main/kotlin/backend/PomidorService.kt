@@ -22,4 +22,8 @@ class PomidorService(
             throw IllegalStateException("Cannot save not finished item")
         }
     }
+
+    fun removeById(id: Long) {
+        repository.deleteById(id)
+    }
 }

@@ -106,7 +106,7 @@ class FocusTimer(
                 ),
                 verticalStrut(10),
                 HBox(Text("Finished intervals: "), finishedCountText),
-                HistoryTable(finishedPomidors.items).buildTable(),
+                HistoryTable(finishedPomidors.items, backgroundService).buildTable(),
             )
         }
         timerUiContent.styleClass.addAll("pomodoro-pane")

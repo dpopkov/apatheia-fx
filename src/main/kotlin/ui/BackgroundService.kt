@@ -52,4 +52,20 @@ class BackgroundService(
     fun loadAll(updateUiAction: (List<Pomidor>) -> Unit) {
         pool.submit(LoadAllTask(updateUiAction))
     }
+
+    inner class RemoveTask(private val itemId: Long, updateUiAction: () -> Unit) : Task<Unit>() {
+        init {
+            setOnSucceeded {
+                log.debug("Removed item by id={}", itemId)
+                updateUiAction()
+            }
+        }
+        override fun call() {
+            pomidorService.removeById(itemId)
+        }
+    }
+
+    fun removeById(id: Long, updateUiAction: () -> Unit) {
+        pool.submit(RemoveTask(id, updateUiAction))
+    }
 }
