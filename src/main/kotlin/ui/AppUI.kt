@@ -8,7 +8,11 @@ import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
+import javafx.geometry.Orientation
 import javafx.scene.Scene
+import javafx.scene.control.SplitPane
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
@@ -49,22 +53,37 @@ class AppUI : Application() {
 
     override fun start(primaryStage: Stage) {
         primaryStage.title = "ApatheiaFX"
-        primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST) { closeListeners.forEach { it() }}
+        primaryStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST) { closeListeners.forEach { it() } }
         primaryStage.onCloseRequest = EventHandler {
             focusTimer.cancel()
         }
 
         val root = StackPane(
-            VBox(
+            SplitPane(
                 focusTimer.buildPomodoroNode(),
-                HistoryTable(finishedPomidors, backgroundService).buildTable(),
-                HBox(Text("Finished intervals: "), finishedCountText).apply {
-                    styleClass.add("status-bar")
-                },
-            )
+                TabPane(
+                    Tab(
+                        "History",
+                        VBox(
+                            HistoryTable(finishedPomidors, backgroundService).buildTable(),
+                            HBox(Text("Finished intervals: "), finishedCountText).apply {
+                                styleClass.add("status-bar")
+                            },
+                        )
+                    ),
+                    Tab("Tasks"),
+                    Tab("Stats"),
+                    Tab("Settings"),
+                ).apply {
+                    this.tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                }
+            ).apply {
+                orientation = Orientation.VERTICAL
+                setDividerPositions(0.1, 0.9)
+            }
         )
         with(primaryStage) {
-            scene = Scene(root, 480.0, 480.0).apply {
+            scene = Scene(root, 480.0, 720.0).apply {
                 stylesheets.add("css/styles.css")
             }
             show()
