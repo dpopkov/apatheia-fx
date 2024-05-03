@@ -17,3 +17,9 @@
 .status-bar {
     -fx-padding: 0.4em;
 }
+.filter-history-pane {
+    -fx-padding: 0.6em;
+}
+.filter-history-bad-regex {
+    -fx-background-color: pink;
+}

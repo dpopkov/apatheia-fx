@@ -3,6 +3,7 @@ package io.dpopkov.apatheiafx.ui
 import io.dpopkov.apatheiafx.model.Pomidor
 import javafx.application.Platform
 import javafx.collections.ObservableList
+import javafx.collections.transformation.FilteredList
 import javafx.scene.Node
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
@@ -26,7 +27,7 @@ class HistoryTable(
 
     fun buildTable(): Node {
         val datetimeFieldRenderer = TextFieldTableCell.forTableColumn<Pomidor, LocalDateTime>(
-            object: StringConverter<LocalDateTime>() {
+            object : StringConverter<LocalDateTime>() {
                 override fun toString(obj: LocalDateTime): String {
                     return obj.format(dateTimeFormatter)
                 }
@@ -68,13 +69,14 @@ class HistoryTable(
             cellFactory = datetimeFieldRenderer
             minWidth = DATETIME_COLUMN_MIN_WIDTH
         }
-        val tableView = TableView(items)
+        val filteredList = FilteredList(items)
+        val tableView = TableView(filteredList)
         val removeMenuItem = MenuItem("Remove").apply {
             setOnAction {
                 val item: Pomidor = tableView.selectionModel.selectedItem
                 val itemId = item.id ?: throw IllegalStateException("Attempt to remove item with id=null")
                 backgroundService.removeById(itemId) {
-                    Platform.runLater{ items.remove(item) }
+                    Platform.runLater { items.remove(item) }
                 }
             }
         }
@@ -93,6 +95,7 @@ class HistoryTable(
         }
         return VBox(
             5.0,
+            HistoryFilterPane(filteredList),
             tableView,
         )
     }
