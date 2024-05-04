@@ -38,6 +38,7 @@ class FocusTimer(
             }
         }
     }
+    private val intervalStatePane = IntervalStatePane { setIntervalState(it) }
 
     private var currentPomidor: Pomidor? = null
 
@@ -49,15 +50,6 @@ class FocusTimer(
     }
 
     fun buildPomodoroNode(): Node {
-        val btnFocus = Button("Focus").apply {
-            setOnAction { setFocusedState() }
-        }
-        val btnRest = Button("Short Rest").apply {
-            setOnAction { setRestState() }
-        }
-        val btnLongRest = Button("Long Rest").apply {
-            setOnAction { setLongRestState() }
-        }
         val timerTxt = Text().apply {
             textProperty().bind(secondsBinding)
             styleClass.addAll("timer-output-text")
@@ -93,7 +85,7 @@ class FocusTimer(
 
         with(timerUiContent.children) {
             addAll(
-                HBox(5.0, btnFocus, btnRest, btnLongRest),
+                intervalStatePane,
                 inputTestingTimeField,
                 timerTxt,
                 intervalNameField,
@@ -116,14 +108,12 @@ class FocusTimer(
 
     private fun setFocusedState() {
         setIntervalState(IntervalType.FOCUS)
+        intervalStatePane.setFocusedState()
     }
 
     private fun setRestState() {
         setIntervalState(IntervalType.SHORT_REST)
-    }
-
-    private fun setLongRestState() {
-        setIntervalState(IntervalType.LONG_REST)
+        intervalStatePane.setRestState()
     }
 
     private fun setIntervalState(type: IntervalType) {
