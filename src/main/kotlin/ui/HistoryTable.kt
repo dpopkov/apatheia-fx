@@ -4,6 +4,7 @@ import io.dpopkov.apatheiafx.model.Pomidor
 import javafx.application.Platform
 import javafx.collections.ObservableList
 import javafx.collections.transformation.FilteredList
+import javafx.event.EventHandler
 import javafx.scene.Node
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
@@ -54,7 +55,12 @@ class HistoryTable(
             minWidth = DATETIME_COLUMN_MIN_WIDTH
         }
         val nameColumn = TableColumn<Pomidor, String>("Name").apply {
-            isEditable = false
+            isEditable = true
+            onEditCommit = EventHandler { evt: TableColumn.CellEditEvent<Pomidor, String> ->
+                val oldItem = evt.tableView.selectionModel.selectedItem
+                val updatingItem = oldItem.copy(name = evt.newValue)
+                backgroundService.update(updatingItem)
+            }
             cellValueFactory = PropertyValueFactory("name")
             cellFactory = textFieldRenderer
         }
@@ -82,7 +88,7 @@ class HistoryTable(
         }
         tableView.apply {
             placeholder = Text("No data exists")
-            isEditable = false
+            isEditable = true
             columns.addAll(
                 startColumn,
                 nameColumn,
