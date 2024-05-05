@@ -57,9 +57,9 @@ class HistoryTable(
         val nameColumn = TableColumn<Pomidor, String>("Name").apply {
             isEditable = true
             onEditCommit = EventHandler { evt: TableColumn.CellEditEvent<Pomidor, String> ->
-                val oldItem = evt.tableView.selectionModel.selectedItem
-                val updatingItem = oldItem.copy(name = evt.newValue)
-                backgroundService.update(updatingItem)
+                val item = evt.tableView.selectionModel.selectedItem
+                item.name = evt.newValue
+                backgroundService.update(item)
             }
             cellValueFactory = PropertyValueFactory("name")
             cellFactory = textFieldRenderer

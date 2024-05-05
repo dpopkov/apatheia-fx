@@ -29,10 +29,10 @@ class PomidorService(
 
     fun update(item: Pomidor) {
         val itemId =item.id ?: throw IllegalArgumentException("Cannot update item with id=null")
-        val old = repository.findById(itemId).orElseThrow {
+        val found = repository.findById(itemId).orElseThrow {
             IllegalArgumentException("Cannot update non-existing item with id=${item.id}")
         }.toModel()
-        val updating = old.copy(name = item.name)
-        repository.save(updating.toEntity())
+        found.name = item.name
+        repository.save(found.toEntity())
     }
 }

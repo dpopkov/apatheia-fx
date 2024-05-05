@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class Pomidor(
-    val name: String = defaultName(),
+    var name: String = defaultName(),
     val start: LocalDateTime = LocalDateTime.now(),
     var finish: LocalDateTime? = null,
     var durationMinutes: Long = -1,

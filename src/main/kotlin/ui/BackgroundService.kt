@@ -20,7 +20,7 @@ class BackgroundService(
         init {
             setOnSucceeded {
                 val saved = it.source.value as Pomidor
-                log.debug("Saved using Task: {}", saved)
+                log.debug("Saved item: {}", saved)
                 updateUiAction(saved)
             }
         }
