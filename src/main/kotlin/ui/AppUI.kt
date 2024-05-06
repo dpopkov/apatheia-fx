@@ -71,7 +71,9 @@ class AppUI : Application() {
                             },
                         )
                     ),
-                    Tab("Tasks"),
+                    Tab("Tasks",
+                        WorkTasksPane()
+                    ),
                     Tab("Stats"),
                     Tab("Settings"),
                 ).apply {
@@ -83,7 +85,7 @@ class AppUI : Application() {
             }
         )
         with(primaryStage) {
-            scene = Scene(root, 480.0, 720.0).apply {
+            scene = Scene(root, 520.0, 720.0).apply {
                 stylesheets.add("css/styles.css")
             }
             show()

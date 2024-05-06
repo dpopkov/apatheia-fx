@@ -11,6 +11,7 @@ data class Pomidor(
     var durationMinutes: Long = -1,
     var id: Long? = null,
 ) {
+    var workTask: WorkTask? = null
     val isFinished: Boolean
         get() = finish != null && durationMinutes != -1L
 
