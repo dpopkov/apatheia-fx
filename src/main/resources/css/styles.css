@@ -23,3 +23,6 @@
 .filter-history-bad-regex {
     -fx-background-color: pink;
 }
+.add-task-pane {
+    -fx-padding: 0.6em;
+}

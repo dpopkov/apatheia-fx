@@ -23,10 +23,12 @@ class WorkTasksPane : VBox(
         val root = TreeItem<WorkTask>()
         treeTable = TreeTableView(root)
         treeTable.isShowRoot = false
+        treeTable.isTableMenuButtonVisible = true
 
         initItemsUnder(root)
         buildTreeTable()
         children.addAll(
+            AddTaskPane(root),
             treeTable
         )
     }
@@ -85,16 +87,16 @@ class WorkTasksPane : VBox(
 
     private fun initItemsUnder(root: TreeItem<WorkTask>) {
         val task1 = WorkTask("task-1")
-        val task11 = WorkTask("task-11", parent=task1)
-        val task12 = WorkTask("task-12", parent=task1)
+        val task11 = WorkTask("task-11", parent = task1)
+        val task12 = WorkTask("task-12", parent = task1)
         val item1 = TreeItem<WorkTask>(task1)
         val item11 = TreeItem(task11)
         val item12 = TreeItem(task12)
         item1.children.addAll(item11, item12)
 
         val task2 = WorkTask("task-2")
-        val task21 = WorkTask("task-21", parent=task2)
-        val task22 = WorkTask("task-22", parent=task2)
+        val task21 = WorkTask("task-21", parent = task2)
+        val task22 = WorkTask("task-22", parent = task2)
         val item2 = TreeItem<WorkTask>(task2)
         val item21 = TreeItem<WorkTask>(task21)
         val item22 = TreeItem<WorkTask>(task22)
