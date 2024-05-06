@@ -1,6 +1,7 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.model.WorkTask
+import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
@@ -30,6 +31,7 @@ class AddTaskPane(
             taskTitleField,
             btnAddTask,
         )
+        alignment = Pos.CENTER_LEFT
         styleClass.add(styleName)
     }
 }

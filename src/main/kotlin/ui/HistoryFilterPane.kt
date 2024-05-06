@@ -2,6 +2,7 @@ package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.model.Pomidor
 import javafx.collections.transformation.FilteredList
+import javafx.geometry.Pos
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
@@ -57,5 +58,6 @@ class HistoryFilterPane(
             useRegexCheckBox,
         )
         styleClass.add(filterPaneStyleName)
+        alignment = Pos.CENTER_LEFT
     }
 }
