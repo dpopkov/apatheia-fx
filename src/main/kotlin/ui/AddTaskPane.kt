@@ -1,37 +1,84 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.model.WorkTask
+import javafx.collections.ObservableList
 import javafx.geometry.Pos
 import javafx.scene.control.Button
+import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.HBox
+import javafx.util.StringConverter
 
 class AddTaskPane(
     private val rootOfTree: TreeItem<WorkTask>,
+    private val workTasks: ObservableList<WorkTask>,
     styleName: String = "add-task-pane",
 ) : HBox(5.0) {
     private val taskTitleLabel = Label("Task Title:")
     private val taskTitleField = TextField("")
+    private val parentLabel = Label("Parent:")
+    private val selectParent = ChoiceBox(workTasks)
     private val btnAddTask = Button("Create")
 
     init {
+        val stringConverter = object : StringConverter<WorkTask>() {
+            override fun toString(obj: WorkTask?): String {
+                return obj?.title ?: ""
+            }
+
+            override fun fromString(string: String?): WorkTask {
+                TODO("Not yet implemented")
+            }
+        }
+        selectParent.converter = stringConverter
+
         btnAddTask.setOnAction {
             val title = taskTitleField.text.trim()
             if (title.isNotEmpty()) {
-                val task = WorkTask(title)
+                val parentTask: WorkTask = selectParent.selectionModel.selectedItem ?: WorkTask.root
+                val task = WorkTask(title, parent = if (!parentTask.isRoot) parentTask else null)
+                workTasks.add(task)
                 val item = TreeItem(task)
-                rootOfTree.children.add(item)
+                if (parentTask.isRoot) {
+                    rootOfTree.children.add(item)
+                } else {
+                    val parentTreeItem = rootOfTree.findRecursivelyForSubTask(parentTask)
+                        ?: throw IllegalStateException("Cannot find parent in root children")
+                    parentTreeItem.children.add(item)
+                }
             }
         }
 
         children.addAll(
+            parentLabel,
+            selectParent,
             taskTitleLabel,
             taskTitleField,
             btnAddTask,
         )
         alignment = Pos.CENTER_LEFT
         styleClass.add(styleName)
+    }
+
+    private fun TreeItem<WorkTask>.findRecursivelyForSubTask(task: WorkTask): TreeItem<WorkTask>? {
+        if (this.value == task) {
+            return this
+        }
+        if (this.children.isEmpty()) {
+            return null
+        }
+        for (item in this.children) {
+            if (item.value == task) {
+                return item
+            } else {
+                val r = item.findRecursivelyForSubTask(task)
+                if (r != null) {
+                    return r
+                }
+            }
+        }
+        return null
     }
 }

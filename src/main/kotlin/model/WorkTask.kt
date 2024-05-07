@@ -16,8 +16,13 @@ data class WorkTask(
         get() = pomidors.sumOf { p -> p.durationMinutes }
     val isFinished: Boolean
         get() = finishedAt != null
+    val isRoot: Boolean = title == "root"
 
     fun finish() {
         finishedAt = LocalDateTime.now()
+    }
+
+    companion object {
+        val root = WorkTask(title = "root")
     }
 }

@@ -3,6 +3,7 @@ package io.dpopkov.apatheiafx.ui
 import io.dpopkov.apatheiafx.AppMainSpring
 import io.dpopkov.apatheiafx.backend.PomidorService
 import io.dpopkov.apatheiafx.model.Pomidor
+import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.application.Application
 import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
@@ -29,6 +30,7 @@ class AppUI : Application() {
     private lateinit var focusTimer: FocusTimer
     private lateinit var backgroundService: BackgroundService
     private val finishedPomidors: ObservableList<Pomidor> = FXCollections.observableArrayList()
+    private val workTasks: ObservableList<WorkTask> = FXCollections.observableArrayList()
     private val sizeBinding = Bindings.createStringBinding(
         { finishedPomidors.size.toString() },
         finishedPomidors
@@ -72,7 +74,7 @@ class AppUI : Application() {
                         )
                     ),
                     Tab("Tasks",
-                        WorkTasksPane()
+                        WorkTasksPane(workTasks)
                     ),
                     Tab("Stats"),
                     Tab("Settings"),

@@ -1,6 +1,7 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.model.WorkTask
+import javafx.collections.ObservableList
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeTableColumn
 import javafx.scene.control.TreeTableView
@@ -13,7 +14,9 @@ import java.time.format.DateTimeFormatter
 
 private const val DATETIME_COLUMN_MIN_WIDTH = 105.0
 
-class WorkTasksPane : VBox(
+class WorkTasksPane(
+    workTasks: ObservableList<WorkTask>,
+) : VBox(
     5.0
 ) {
     private val treeTable: TreeTableView<WorkTask>
@@ -25,10 +28,10 @@ class WorkTasksPane : VBox(
         treeTable.isShowRoot = false
         treeTable.isTableMenuButtonVisible = true
 
-        initItemsUnder(root)
+        initItemsUnder(root, workTasks)
         buildTreeTable()
         children.addAll(
-            AddTaskPane(root),
+            AddTaskPane(root, workTasks),
             treeTable
         )
     }
@@ -85,18 +88,24 @@ class WorkTasksPane : VBox(
         )
     }
 
-    private fun initItemsUnder(root: TreeItem<WorkTask>) {
-        val task1 = WorkTask("task-1")
-        val task11 = WorkTask("task-11", parent = task1)
-        val task12 = WorkTask("task-12", parent = task1)
+    private fun initItemsUnder(root: TreeItem<WorkTask>, workTasks: ObservableList<WorkTask>) {
+        // TODO: later build TreeItem-s using workTasks
+
+        val rootTask = WorkTask.root
+        root.value = rootTask
+        workTasks.add(rootTask)
+
+        val task1 = WorkTask("task-1").also { workTasks.add(it) }
+        val task11 = WorkTask("task-11", parent = task1).also { workTasks.add(it) }
+        val task12 = WorkTask("task-12", parent = task1).also { workTasks.add(it) }
         val item1 = TreeItem<WorkTask>(task1)
         val item11 = TreeItem(task11)
         val item12 = TreeItem(task12)
         item1.children.addAll(item11, item12)
 
-        val task2 = WorkTask("task-2")
-        val task21 = WorkTask("task-21", parent = task2)
-        val task22 = WorkTask("task-22", parent = task2)
+        val task2 = WorkTask("task-2").also { workTasks.add(it) }
+        val task21 = WorkTask("task-21", parent = task2).also { workTasks.add(it) }
+        val task22 = WorkTask("task-22", parent = task2).also { workTasks.add(it) }
         val item2 = TreeItem<WorkTask>(task2)
         val item21 = TreeItem<WorkTask>(task21)
         val item22 = TreeItem<WorkTask>(task22)
