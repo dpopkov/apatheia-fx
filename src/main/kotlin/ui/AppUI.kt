@@ -2,6 +2,7 @@ package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.AppMainSpring
 import io.dpopkov.apatheiafx.backend.PomidorService
+import io.dpopkov.apatheiafx.backend.WorkTaskService
 import io.dpopkov.apatheiafx.model.Pomidor
 import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.application.Application
@@ -46,11 +47,18 @@ class AppUI : Application() {
             .build()
             .run()
         val pomidorService = applicationContext.getBean(PomidorService::class.java)
-        backgroundService = BackgroundService(pomidorService)
+        val workTaskService = applicationContext.getBean(WorkTaskService::class.java)
+        backgroundService = BackgroundService(pomidorService, workTaskService)
         closeListeners.add {
             backgroundService.shutdown()
         }
         focusTimer = FocusTimer(finishedPomidors, backgroundService)
+        backgroundService.loadAllTasks { loaded: List<WorkTask> ->
+            workTasks.add(WorkTask.root)
+            for(task in loaded) {
+                workTasks.add(task)
+            }
+        }
     }
 
     override fun start(primaryStage: Stage) {
@@ -74,7 +82,7 @@ class AppUI : Application() {
                         )
                     ),
                     Tab("Tasks",
-                        WorkTasksPane(workTasks)
+                        WorkTasksPane(workTasks, backgroundService)
                     ),
                     Tab("Stats"),
                     Tab("Settings"),

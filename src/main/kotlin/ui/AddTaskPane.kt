@@ -7,13 +7,12 @@ import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
-import javafx.scene.control.TreeItem
 import javafx.scene.layout.HBox
 import javafx.util.StringConverter
 
 class AddTaskPane(
-    private val rootOfTree: TreeItem<WorkTask>,
     private val workTasks: ObservableList<WorkTask>,
+    private val backgroundService: BackgroundService,
     styleName: String = "add-task-pane",
 ) : HBox(5.0) {
     private val taskTitleLabel = Label("Task Title:")
@@ -39,14 +38,9 @@ class AddTaskPane(
             if (title.isNotEmpty()) {
                 val parentTask: WorkTask = selectParent.selectionModel.selectedItem ?: WorkTask.root
                 val task = WorkTask(title, parent = if (!parentTask.isRoot) parentTask else null)
-                workTasks.add(task)
-                val item = TreeItem(task)
-                if (parentTask.isRoot) {
-                    rootOfTree.children.add(item)
-                } else {
-                    val parentTreeItem = rootOfTree.findRecursivelyForSubTask(parentTask)
-                        ?: throw IllegalStateException("Cannot find parent in root children")
-                    parentTreeItem.children.add(item)
+                backgroundService.saveWorkTask(task) {
+                    task.id = it.id
+                    workTasks.add(task)
                 }
             }
         }
@@ -60,25 +54,5 @@ class AddTaskPane(
         )
         alignment = Pos.CENTER_LEFT
         styleClass.add(styleName)
-    }
-
-    private fun TreeItem<WorkTask>.findRecursivelyForSubTask(task: WorkTask): TreeItem<WorkTask>? {
-        if (this.value == task) {
-            return this
-        }
-        if (this.children.isEmpty()) {
-            return null
-        }
-        for (item in this.children) {
-            if (item.value == task) {
-                return item
-            } else {
-                val r = item.findRecursivelyForSubTask(task)
-                if (r != null) {
-                    return r
-                }
-            }
-        }
-        return null
     }
 }

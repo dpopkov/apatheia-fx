@@ -1,4 +1,7 @@
 package io.dpopkov.apatheiafx.backend
 
-interface WorkTaskRepository {
+import org.springframework.data.repository.CrudRepository
+
+interface WorkTaskRepository : CrudRepository<WorkTaskEntity, Long> {
+    override fun findAll(): List<WorkTaskEntity>
 }

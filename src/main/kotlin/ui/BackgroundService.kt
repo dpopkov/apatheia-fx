@@ -1,13 +1,16 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.backend.PomidorService
+import io.dpopkov.apatheiafx.backend.WorkTaskService
 import io.dpopkov.apatheiafx.model.Pomidor
+import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.concurrent.Task
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
 class BackgroundService(
-    private val pomidorService: PomidorService
+    private val pomidorService: PomidorService,
+    private val workTaskService: WorkTaskService,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
     private val pool = Executors.newCachedThreadPool()
@@ -82,5 +85,42 @@ class BackgroundService(
 
     fun update(item: Pomidor) {
         pool.submit(UpdateTask(item))
+    }
+
+    inner class SaveWorkTaskTask(private val item: WorkTask, updateUiAction: (WorkTask) -> Unit): Task<WorkTask>() {
+        init {
+            setOnSucceeded {
+                val saved = it.source.value as WorkTask
+                log.debug("Saved task: {}", saved)
+                updateUiAction(saved)
+            }
+        }
+
+        override fun call(): WorkTask {
+            return workTaskService.save(item)
+        }
+    }
+
+    fun saveWorkTask(item: WorkTask, updateUiAction: (WorkTask) -> Unit) {
+        pool.submit(SaveWorkTaskTask(item, updateUiAction))
+    }
+
+    inner class LoadAllWorkTasksTask(updateUiAction: (List<WorkTask>) -> Unit) : Task<List<WorkTask>>() {
+        init {
+            setOnSucceeded {
+                val all = it.source.value as List<*>
+                log.debug("Loading {} work tasks", all.size)
+                @Suppress("UNCHECKED_CAST")
+                updateUiAction(all as List<WorkTask>)
+            }
+        }
+
+        override fun call(): List<WorkTask> {
+            return workTaskService.getAll()
+        }
+    }
+
+    fun loadAllTasks(updateUiAction: (List<WorkTask>) -> Unit) {
+        pool.submit(LoadAllWorkTasksTask(updateUiAction))
     }
 }
