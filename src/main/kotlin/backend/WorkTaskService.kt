@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 @Service
 class WorkTaskService(
     private val repository: WorkTaskRepository,
-    private val wortTaskConverter: WorkTaskConverter,
+    private val woktTaskConverter: WorkTaskConverter,
 ) {
     fun getAll(): List<WorkTask> {
         val all = repository.findAll()
@@ -19,9 +19,13 @@ class WorkTaskService(
         val entToSave: WorkTaskEntity = if (item.parent == null) {
             item.toEntity()
         } else {
-            wortTaskConverter.toEntity(item)
+            woktTaskConverter.toEntity(item)
         }
         val entSaved = repository.save(entToSave)
         return entSaved.toModel()
+    }
+
+    fun removeById(id: Long) {
+        repository.deleteById(id)
     }
 }

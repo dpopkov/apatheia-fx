@@ -123,4 +123,21 @@ class BackgroundService(
     fun loadAllTasks(updateUiAction: (List<WorkTask>) -> Unit) {
         pool.submit(LoadAllWorkTasksTask(updateUiAction))
     }
+
+    inner class RemoveWorkTaskTask(private val workTaskId: Long, updateUiAction: () -> Unit): Task<Unit>() {
+        init {
+            setOnSucceeded {
+                log.debug("Removed work task by id={}", workTaskId)
+                updateUiAction()
+            }
+        }
+        override fun call() {
+            workTaskService.removeById(workTaskId)
+        }
+    }
+
+    fun removeWorkTask(item: WorkTask, updateUiAction: () -> Unit) {
+        val itemId = item.id ?: throw IllegalStateException("Attempt to delete work item with id=null")
+        pool.submit(RemoveWorkTaskTask(itemId, updateUiAction))
+    }
 }

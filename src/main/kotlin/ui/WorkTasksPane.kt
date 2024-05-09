@@ -3,9 +3,7 @@ package io.dpopkov.apatheiafx.ui
 import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
-import javafx.scene.control.TreeItem
-import javafx.scene.control.TreeTableColumn
-import javafx.scene.control.TreeTableView
+import javafx.scene.control.*
 import javafx.scene.control.cell.TextFieldTreeTableCell
 import javafx.scene.control.cell.TreeItemPropertyValueFactory
 import javafx.scene.layout.VBox
@@ -29,6 +27,23 @@ class WorkTasksPane(
         treeTable = TreeTableView(root)
         treeTable.isShowRoot = false
         treeTable.isTableMenuButtonVisible = true
+        treeTable.contextMenu = ContextMenu(MenuItem("Remove").apply {
+            setOnAction {
+                val selected: TreeItem<WorkTask> = treeTable.selectionModel.selectedItem
+                if (selected.children.isNotEmpty()) {
+                    Alert(Alert.AlertType.WARNING).apply {
+                        title = "Work Task Management"
+                        headerText = "This Work Task has children. It can not be deleted!"
+                        showAndWait()
+                    }
+                } else {
+                    backgroundService.removeWorkTask(selected.value) {
+                        workTasks.remove(selected.value)
+                        selected.parent.children.remove(selected)
+                    }
+                }
+            }
+        })
 
         initWorkTasksAdditionListener(root, workTasks)
         buildTreeTable()
