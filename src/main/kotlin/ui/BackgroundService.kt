@@ -63,6 +63,7 @@ class BackgroundService(
                 updateUiAction()
             }
         }
+
         override fun call() {
             pomidorService.removeById(itemId)
         }
@@ -78,6 +79,7 @@ class BackgroundService(
                 log.debug("Updated item with id={}", item.id)
             }
         }
+
         override fun call() {
             pomidorService.update(item)
         }
@@ -87,7 +89,7 @@ class BackgroundService(
         pool.submit(UpdateTask(item))
     }
 
-    inner class SaveWorkTaskTask(private val item: WorkTask, updateUiAction: (WorkTask) -> Unit): Task<WorkTask>() {
+    inner class SaveWorkTaskTask(private val item: WorkTask, updateUiAction: (WorkTask) -> Unit) : Task<WorkTask>() {
         init {
             setOnSucceeded {
                 val saved = it.source.value as WorkTask
@@ -124,13 +126,14 @@ class BackgroundService(
         pool.submit(LoadAllWorkTasksTask(updateUiAction))
     }
 
-    inner class RemoveWorkTaskTask(private val workTaskId: Long, updateUiAction: () -> Unit): Task<Unit>() {
+    inner class RemoveWorkTaskTask(private val workTaskId: Long, updateUiAction: () -> Unit) : Task<Unit>() {
         init {
             setOnSucceeded {
                 log.debug("Removed work task by id={}", workTaskId)
                 updateUiAction()
             }
         }
+
         override fun call() {
             workTaskService.removeById(workTaskId)
         }
@@ -139,5 +142,22 @@ class BackgroundService(
     fun removeWorkTask(item: WorkTask, updateUiAction: () -> Unit) {
         val itemId = item.id ?: throw IllegalStateException("Attempt to delete work item with id=null")
         pool.submit(RemoveWorkTaskTask(itemId, updateUiAction))
+    }
+
+    inner class UpdateWorkTaskTask(private val workTask: WorkTask) : Task<Unit>() {
+        init {
+            setOnSucceeded {
+                log.debug("Updated work task with id={}", workTask.id)
+            }
+        }
+
+        override fun call() {
+            workTaskService.update(workTask)
+        }
+    }
+
+    fun updateWorkTaskTitle(item: WorkTask, newTitle: String) {
+        item.title = newTitle
+        pool.submit(UpdateWorkTaskTask(item))
     }
 }

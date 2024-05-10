@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 class WorkTaskEntity(
-    val title: String,
+    var title: String,
     @ManyToOne
     val parent: WorkTaskEntity? = null,
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)

@@ -16,16 +16,21 @@ class WorkTaskService(
     }
 
     fun save(item: WorkTask): WorkTask {
-        val entToSave: WorkTaskEntity = if (item.parent == null) {
-            item.toEntity()
-        } else {
-            woktTaskConverter.toEntity(item)
-        }
+        val entToSave: WorkTaskEntity = woktTaskConverter.toEntity(item)
         val entSaved = repository.save(entToSave)
         return entSaved.toModel()
     }
 
     fun removeById(id: Long) {
         repository.deleteById(id)
+    }
+
+    fun update(item: WorkTask) {
+        val itemId =item.id ?: throw IllegalArgumentException("Cannot update work task with id=null")
+        val found = repository.findById(itemId).orElseThrow {
+            IllegalArgumentException("Cannot find work task id=$itemId")
+        }
+        found.title = item.title
+        repository.save(found)
     }
 }

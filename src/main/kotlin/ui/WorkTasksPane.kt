@@ -3,6 +3,7 @@ package io.dpopkov.apatheiafx.ui
 import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
+import javafx.event.EventHandler
 import javafx.scene.control.*
 import javafx.scene.control.cell.TextFieldTreeTableCell
 import javafx.scene.control.cell.TreeItemPropertyValueFactory
@@ -15,7 +16,7 @@ private const val DATETIME_COLUMN_MIN_WIDTH = 105.0
 
 class WorkTasksPane(
     workTasks: ObservableList<WorkTask>,
-    backgroundService: BackgroundService,
+    private val backgroundService: BackgroundService,
 ) : VBox(
     5.0
 ) {
@@ -44,6 +45,7 @@ class WorkTasksPane(
                 }
             }
         })
+        treeTable.isEditable = true
 
         initWorkTasksAdditionListener(root, workTasks)
         buildTreeTable()
@@ -74,8 +76,16 @@ class WorkTasksPane(
                 }
             }
         )
+        val textFieldRenderer = TextFieldTreeTableCell.forTreeTableColumn<WorkTask>()
         val titleColumn = TreeTableColumn<WorkTask, String>("Title").apply {
             prefWidth = 140.0
+            isEditable = true
+            onEditCommit = EventHandler { evt: TreeTableColumn.CellEditEvent<WorkTask, String> ->
+                val selectedItem: WorkTask = treeTable.selectionModel.selectedItem.value
+                val newTitle = evt.newValue
+                backgroundService.updateWorkTaskTitle(selectedItem, newTitle)
+            }
+            cellFactory = textFieldRenderer
             cellValueFactory = TreeItemPropertyValueFactory("title")
         }
         val startedColumn = TreeTableColumn<WorkTask, LocalDateTime>("Start").apply {

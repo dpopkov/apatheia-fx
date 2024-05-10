@@ -8,6 +8,9 @@ class WorkTaskConverter(
     private val workTaskRepository: WorkTaskRepository
 ) {
     fun toEntity(workTask: WorkTask): WorkTaskEntity {
+        if (workTask.parent == null) {
+            return workTask.toEntity()
+        }
         val parentId = workTask.parent?.id
         val parentEntity = if (parentId != null) {
             workTaskRepository.findById(parentId).orElseThrow {
