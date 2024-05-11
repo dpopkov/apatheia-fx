@@ -4,6 +4,7 @@ import io.dpopkov.apatheiafx.model.Pomidor
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
 import java.time.LocalDateTime
 import java.time.Duration
 
@@ -12,6 +13,8 @@ class PomidorEntity(
     val name: String,
     val start: LocalDateTime,
     val finish: LocalDateTime,
+    @ManyToOne
+    var workTask: WorkTaskEntity? = null,
     @Id
     @GeneratedValue
     var id: Long? = null,
@@ -23,7 +26,12 @@ class PomidorEntity(
             finish = this.finish,
             durationMinutes = Duration.between(this.start, this.finish).toMinutes(),
             id = this.id
-        )
+        ).apply {
+            val entWorkTask = this@PomidorEntity.workTask
+            if (entWorkTask != null) {
+                this.workTask = entWorkTask.toModel()
+            }
+        }
     }
 }
 

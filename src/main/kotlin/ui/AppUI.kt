@@ -52,7 +52,7 @@ class AppUI : Application() {
         closeListeners.add {
             backgroundService.shutdown()
         }
-        focusTimer = FocusTimer(finishedPomidors, backgroundService)
+        focusTimer = FocusTimer(finishedPomidors, workTasks, backgroundService)
         backgroundService.loadAllTasks { loaded: List<WorkTask> ->
             workTasks.add(WorkTask.root)
             for(task in loaded) {

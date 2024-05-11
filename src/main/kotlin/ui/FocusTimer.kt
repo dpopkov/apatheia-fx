@@ -1,21 +1,24 @@
 package io.dpopkov.apatheiafx.ui
 
 import io.dpopkov.apatheiafx.model.Pomidor
+import io.dpopkov.apatheiafx.model.WorkTask
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.ObservableList
 import javafx.scene.Node
-import javafx.scene.control.Alert
-import javafx.scene.control.Button
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.text.Text
+import javafx.util.StringConverter
 import java.util.*
 
 class FocusTimer(
     private val finishedPomidors: ObservableList<Pomidor>,
+    private val workTasks: ObservableList<WorkTask>,
     private val backgroundService: BackgroundService,
     private val playSoundNotification: Boolean = true,
     private val showAlert: Boolean = true,
@@ -41,7 +44,7 @@ class FocusTimer(
     private val intervalStatePane = IntervalStatePane { setIntervalState(it) }
 
     private var currentPomidor: Pomidor? = null
-
+    private var currentWorkTask: WorkTask? = null
 
     init {
         backgroundService.loadAll { loaded: List<Pomidor> ->
@@ -82,12 +85,36 @@ class FocusTimer(
             cancelTimers()
             updateSecondsProperty()
         }
+        val workTasksCombo = ComboBox(workTasks).apply {
+            promptText = "Select task"
+            converter = object: StringConverter<WorkTask>() {
+                override fun toString(obj: WorkTask): String {
+                    return obj.title
+                }
+
+                override fun fromString(string: String?): WorkTask {
+                    throw IllegalStateException("This ComboBox is not editable")
+                }
+            }
+            setOnAction {
+                currentWorkTask = selectionModel.selectedItem
+            }
+        }
 
         with(timerUiContent.children) {
             addAll(
                 intervalStatePane,
                 inputTestingTimeField,
-                timerTxt,
+                HBox(
+                    timerTxt,
+                    Region().also { HBox.setHgrow(it, Priority.ALWAYS) },
+                    VBox(
+                        5.0,
+                        Label("Current work task:"),
+                        workTasksCombo,
+                    ),
+                ),
+
                 intervalNameField,
                 HBox(
                     5.0,
@@ -181,8 +208,13 @@ class FocusTimer(
                 if (intervalType == IntervalType.FOCUS) {
                     currentPomidor?.let {
                         it.finishIt()
+                        if (currentWorkTask != null && !currentWorkTask!!.isRoot) {
+                            it.workTask = currentWorkTask
+                        }
                         backgroundService.save(it) { saved: Pomidor ->
-                            Platform.runLater { finishedPomidors.add(saved) }
+                            Platform.runLater {
+                                finishedPomidors.add(saved)
+                            }
                         }
                     }
                 }

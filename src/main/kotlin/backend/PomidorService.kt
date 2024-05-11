@@ -5,7 +5,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class PomidorService(
-    private val repository: PomidorRepository
+    private val repository: PomidorRepository,
+    private val workTaskRepository: WorkTaskRepository,
 ) {
     fun getAll(): List<Pomidor> {
         val all = repository.findAll()
@@ -16,7 +17,14 @@ class PomidorService(
 
     fun save(item: Pomidor): Pomidor {
         if (item.isFinished) {
-            val ent = repository.save(item.toEntity())
+            val entToSave = item.toEntity()
+            if (item.workTask != null) {
+                val taskId = item.workTask!!.id ?: throw IllegalArgumentException("Attempt to use work task with id=null")
+                val entWorkTask = workTaskRepository.findById(taskId)
+                    .orElseThrow { IllegalArgumentException("Cannot find work task by id=${item.workTask!!.id}")}
+                entToSave.workTask = entWorkTask
+            }
+            val ent = repository.save(entToSave)
             return ent.toModel()
         } else {
             throw IllegalStateException("Cannot save not finished item")
